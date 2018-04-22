@@ -1,7 +1,7 @@
 Nonterminals root date time datetime.
 
 Terminals integer time_separator date_separator month meridian_specifier
-  date_marker time_marker now special_word shift date_unit.
+  date_marker time_marker now special_word shift date_unit weekday.
 
 Rootsymbol root.
 
@@ -14,6 +14,7 @@ date -> integer month : md('$2', '$1').
 date -> month integer : md('$1', '$2').
 date -> special_word : special_word('$1').
 date -> shift date_unit : shift_date_by_unit('$2', '$1').
+date -> shift weekday : shift_date_to_weekday('$2', '$1').
 
 time -> integer time_separator integer : hm('$1', '$3').
 time -> integer time_separator integer meridian_specifier : hm('$1', '$3', '$4').
@@ -86,6 +87,21 @@ shift_date_by_unit({Y, M, D}, year, Direction) ->
         {false, 2, 29} -> {Year, 2, 28};
         {true, _, _} -> {Year, M, D}
     end.
+
+shift_date_to_weekday({weekday, _, Weekday}, {shift, _, Direction}) ->
+    {BaseDate, _Time} = calendar:universal_time(),
+    BaseWeekday = calendar:day_of_the_week(BaseDate),
+    case Direction of
+        1 ->
+            WeekCompletion = 7 - BaseWeekday,
+            shift_date(BaseDate, WeekCompletion + Weekday);
+        0 ->
+            shift_date(BaseDate, Weekday - BaseWeekday);
+        -1 ->
+            WeekCompletion = 7 - Weekday,
+            shift_date(BaseDate, - BaseWeekday - WeekCompletion)
+    end.
+
 
 shift_date(Date, Shift) ->
     calendar:gregorian_days_to_date(

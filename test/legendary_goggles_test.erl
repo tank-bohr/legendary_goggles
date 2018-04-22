@@ -27,5 +27,27 @@ special_words_test_() ->
 next_week_test_() ->
     NextWeek = testee("next week"),
     LastWeek = testee("last week"),
-    [?_assert(calendar:iso_week_number(NextWeek) > calendar:iso_week_number()),
-    ?_assert(calendar:iso_week_number(LastWeek) < calendar:iso_week_number())].
+    {Today, _} = calendar:universal_time(),
+    %% ?debugVal(NextWeek),
+    %% ?debugVal(LastWeek),
+    [?_assert(calendar:valid_date(NextWeek)),
+    ?_assert(calendar:valid_date(LastWeek)),
+    ?_assert(NextWeek > Today),
+    ?_assert(LastWeek < Today)].
+
+shift_to_weekday_test_() ->
+    NextFriday = testee("next Fri"),
+    LastMonday = testee("last Monday"),
+    ThisWednesday = testee("this Wed"),
+    {Today, _} = calendar:universal_time(),
+    %% ?debugVal(NextFriday),
+    %% ?debugVal(LastMonday),
+    [?_assert(calendar:valid_date(NextFriday)),
+    ?_assert(calendar:valid_date(LastMonday)),
+    ?_assert(calendar:valid_date(ThisWednesday)),
+    ?_assertEqual(5, calendar:day_of_the_week(NextFriday)),
+    ?_assertEqual(3, calendar:day_of_the_week(ThisWednesday)),
+    ?_assertEqual(1, calendar:day_of_the_week(LastMonday)),
+    ?_assertEqual(calendar:iso_week_number(), calendar:iso_week_number(ThisWednesday)),
+    ?_assert(NextFriday > Today),
+    ?_assert(LastMonday < Today)].
