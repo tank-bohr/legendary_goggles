@@ -6,28 +6,31 @@ WS = [\s\t]
 AM = am|AM|a\.m\.|A\.M\.|a
 PM = pm|PM|p\.m\.|P\.M\.|p
 COLON = :
-UNITS = seconds\?|minutes\?|hours\?|days\?|weeks\?|months\?|years\?
 MONTH = Jan(uary)?|Feb(ruary)?|Mar(ch)?|Apr(il)?|May|June?|July?|Aug(ust)?|Sep(tember)?|Oct(ober)?|Nov(ember)?|Dec(ember)?
-NUMERALS = one|first|two|second|three|third|four(th)|five|fifth|six(th)?|seven(th)|eighth?|nine(th)?|ten(th)?
+DATE_UNIT = days?|weeks?|months?|years?
+NUMERAL = one|first|two|second|three|third|four(th)?|five|fifth|six(th)?|seven(th)?|eighth?|nine(th)?|ten(th)?
+SPECIAL_WORD = today|tomorrow|yesterday
 
 Rules.
 
-{D}+      : {token, {integer, TokenLine, list_to_integer(TokenChars)}}.
-{COLON}   : {token, {time_separator, TokenLine}}.
-[\/\-]    : {token, {date_separator, TokenLine}}.
-{AM}      : {token, {meridian_specifier, TokenLine, am}}.
-{PM}      : {token, {meridian_specifier, TokenLine, pm}}.
-{UNITS}   : {token, {unit, TokenLine, unit(TokenChars)}}.
-{MONTH}   : {token, {month, TokenLine, month(TokenChars)}}.
-on        : {token, {date_marker, TokenLine}}.
-at        : {token, {time_marker, TokenLine}}.
-{WS}+     : skip_token.
-{L}+      : skip_token.
+{D}+           : {token, {integer, TokenLine, list_to_integer(TokenChars)}}.
+{COLON}        : {token, {time_separator, TokenLine}}.
+[\/\-]         : {token, {date_separator, TokenLine}}.
+{AM}           : {token, {meridian_specifier, TokenLine, am}}.
+{PM}           : {token, {meridian_specifier, TokenLine, pm}}.
+{DATE_UNIT}    : {token, {date_unit, TokenLine, unit(TokenChars)}}.
+{MONTH}        : {token, {month, TokenLine, month(TokenChars)}}.
+on             : {token, {date_marker, TokenLine}}.
+at             : {token, {time_marker, TokenLine}}.
+now            : {token, {now, TokenLine, now}}.
+{SPECIAL_WORD} : {token, {special_word, TokenLine, list_to_atom(TokenChars)}}.
+{WS}+          : skip_token.
+{L}+           : skip_token.
 
 Erlang code.
 
 unit(Unit) ->
-    singularize(Unit).
+    list_to_atom(singularize(Unit)).
 
 singularize(Str) ->
     string:trim(Str, trailing, "s").

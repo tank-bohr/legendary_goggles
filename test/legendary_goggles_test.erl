@@ -15,3 +15,11 @@ parse_test_() ->
         ?_assertMatch({_, 4, 22}, testee("22 April")),
         ?_assertEqual({{2018, 4, 22}, {8, 46}}, testee("on 2018-04-22 at 8:46"))
     ].
+
+now_test() ->
+    {Date, _Time} = testee("now"),
+    ?assert(calendar:valid_date(Date)).
+
+special_words_test_() ->
+    [?_assert(calendar:valid_date(testee(X)))
+        || X <- ["yesterday", "today", "tomorrow"]].
