@@ -24,6 +24,9 @@ on             : {token, {date_marker, TokenLine}}.
 at             : {token, {time_marker, TokenLine}}.
 now            : {token, {now, TokenLine, now}}.
 {SPECIAL_WORD} : {token, {special_word, TokenLine, list_to_atom(TokenChars)}}.
+last           : {token, {shift, TokenLine, -1}}.
+the|this       : {token, {shift, TokenLine, 0}}.
+next           : {token, {shift, TokenLine, 1}}.
 {WS}+          : skip_token.
 {L}+           : skip_token.
 

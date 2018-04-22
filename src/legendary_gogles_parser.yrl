@@ -1,7 +1,7 @@
 Nonterminals root date time datetime.
 
 Terminals integer time_separator date_separator month meridian_specifier
-  date_marker time_marker now special_word.
+  date_marker time_marker now special_word shift date_unit.
 
 Rootsymbol root.
 
@@ -13,6 +13,7 @@ date -> integer date_separator integer date_separator integer : ymd('$1', '$3', 
 date -> integer month : md('$2', '$1').
 date -> month integer : md('$1', '$2').
 date -> special_word : special_word('$1').
+date -> shift date_unit : shift_date_by_unit('$2', '$1').
 
 time -> integer time_separator integer : hm('$1', '$3').
 time -> integer time_separator integer meridian_specifier : hm('$1', '$3', '$4').
@@ -64,6 +65,26 @@ special_word({special_word, _, SpecialWord}) ->
         today -> BaseDate;
         tomorrow -> shift_date(BaseDate, 1);
         yesterday -> shift_date(BaseDate, -1)
+    end.
+
+shift_date_by_unit({date_unit, _, Unit}, {shift, _, Direction}) ->
+    {BaseDate, _Time} = calendar:universal_time(),
+    shift_date_by_unit(BaseDate, Unit, Direction).
+
+shift_date_by_unit(BaseDate, _Unit, 0) ->
+    BaseDate;
+shift_date_by_unit(BaseDate, day, Direction) ->
+    shift_date(BaseDate, Direction);
+shift_date_by_unit(BaseDate, week, Direction) ->
+    shift_date(BaseDate, 7 * Direction);
+shift_date_by_unit(BaseDate, month, Direction) ->
+    %% Naive implementaion
+    shift_date(BaseDate, 30 * Direction);
+shift_date_by_unit({Y, M, D}, year, Direction) ->
+    Year = Y + Direction,
+    case { calendar:is_leap_year(Year), M, D} of
+        {false, 2, 29} -> {Year, 2, 28};
+        {true, _, _} -> {Year, M, D}
     end.
 
 shift_date(Date, Shift) ->
