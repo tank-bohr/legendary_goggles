@@ -6,5 +6,7 @@
 
 parse(String) ->
     {ok, Tokens, _} = legendary_gogles_lexer:string(String),
-    {ok, Time} = legendary_gogles_parser:parse(Tokens),
-    Time.
+    case legendary_gogles_parser:parse(Tokens) of
+        {ok, Time} -> Time;
+        _ -> invalid
+    end.

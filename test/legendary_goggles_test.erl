@@ -51,3 +51,6 @@ shift_to_weekday_test_() ->
     ?_assertEqual(calendar:iso_week_number(), calendar:iso_week_number(ThisWednesday)),
     ?_assert(NextFriday > Today),
     ?_assert(LastMonday < Today)].
+
+syntax_error_test() ->
+    ?assertEqual(invalid, testee("at am to pm")).
