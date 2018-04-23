@@ -15,6 +15,7 @@ date -> month integer : md('$1', '$2').
 date -> special_word : special_word('$1').
 date -> shift date_unit : shift_date_by_unit('$2', '$1').
 date -> shift weekday : shift_date_to_weekday('$2', '$1').
+date -> date_marker date: '$2'.
 
 time -> integer time_separator integer : hm('$1', '$3').
 time -> integer time_separator integer meridian_specifier : hm('$1', '$3', '$4').

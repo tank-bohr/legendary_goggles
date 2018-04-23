@@ -13,6 +13,7 @@ parse_test_() ->
         ?_assertEqual({2018, 4, 22}, testee("2018-04-22")),
         ?_assertMatch({_, 1, 15}, testee("Jan 15")),
         ?_assertMatch({_, 4, 22}, testee("22 April")),
+        ?_assertMatch({_, 6, 1}, testee("on June 1st")),
         ?_assertEqual({{2018, 4, 22}, {8, 46}}, testee("on 2018-04-22 at 8:46"))
     ].
 
