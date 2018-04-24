@@ -57,3 +57,9 @@ shift_to_weekday_test_() ->
 
 syntax_error_test() ->
     ?assertEqual(invalid, testee("at am to pm")).
+
+special_word_plus_time_test() ->
+    {Date, Time} = testee("tomorrow at 4pm"),
+    {Today, _} = calendar:universal_time(),
+    ?assertEqual({16, 0}, Time),
+    ?assert(Date > Today).

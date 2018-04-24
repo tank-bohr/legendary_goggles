@@ -23,6 +23,8 @@ time -> integer time_separator integer meridian_specifier : hm('$1', '$3', '$4')
 time -> time_marker time : '$2'.
 
 datetime -> now : calendar:universal_time().
+datetime -> time special_word : time_and_special_word('$1', '$2').
+datetime -> special_word time : time_and_special_word('$2', '$1').
 datetime -> date_marker date time_marker time : {'$2', '$4'}.
 
 Erlang code.
@@ -69,6 +71,10 @@ special_word({special_word, _, SpecialWord}) ->
         tomorrow -> shift_date(BaseDate, 1);
         yesterday -> shift_date(BaseDate, -1)
     end.
+
+time_and_special_word(Time, SpecialWord) ->
+    Date = special_word(SpecialWord),
+    {Date, Time}.
 
 shift_date_by_unit({date_unit, _, Unit}, {shift, _, Direction}) ->
     {BaseDate, _Time} = calendar:universal_time(),
