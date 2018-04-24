@@ -9,6 +9,8 @@ parse_test_() ->
         ?_assertEqual({23, 06}, testee("time is 23:06")),
         ?_assertEqual({11, 1}, testee("11:01 am")),
         ?_assertEqual({23, 2}, testee("11 : 02 pm")),
+        ?_assertEqual({22, 0}, testee("10pm")),
+        ?_assertEqual({15, 0}, testee("at 3pm")),
         ?_assertEqual({2018, 4, 22}, testee("2018/04/22")),
         ?_assertEqual({2018, 4, 22}, testee("2018-04-22")),
         ?_assertMatch({_, 1, 15}, testee("Jan 15")),
