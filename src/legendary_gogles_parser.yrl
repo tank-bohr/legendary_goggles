@@ -22,7 +22,7 @@ time -> integer time_separator integer : hm('$1', '$3').
 time -> integer time_separator integer meridian_specifier : hm('$1', '$3', '$4').
 time -> time_marker time : '$2'.
 
-datetime -> now : calendar:universal_time().
+datetime -> now : date_hm().
 datetime -> time special_word : time_and_special_word('$1', '$2').
 datetime -> special_word time : time_and_special_word('$2', '$1').
 datetime -> date_marker date time_marker time : {'$2', '$4'}.
@@ -63,6 +63,10 @@ hm(Hour, Min, {meridian_specifier, _, pm}) ->
       {H, M} when H >= 12 -> {H, M};
       {H, M} -> {H + 12, M}
     end.
+
+date_hm() ->
+    {Date, {H, M, _}} = calendar:universal_time(),
+    {Date, {H, M}}.
 
 special_word({special_word, _, SpecialWord}) ->
     {BaseDate, _Time} = calendar:universal_time(),
