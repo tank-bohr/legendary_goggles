@@ -34,7 +34,7 @@ ymd({integer, _, Year}, {integer, _, Month}, {integer, _, Day}) ->
     ValidDate = calendar:valid_date(Date),
     case ValidDate of
         true -> Date;
-        fale -> invalid
+        false -> invalid
     end.
 
 md({month, _, Month}, {integer, _, Day}) ->
@@ -43,7 +43,7 @@ md({month, _, Month}, {integer, _, Day}) ->
     ValidDate = calendar:valid_date(Date),
     case ValidDate of
         true -> Date;
-        fale -> invalid
+        false -> invalid
     end.
 
 hm({integer, _, Hour}, {integer, _, Min})
