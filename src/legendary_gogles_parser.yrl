@@ -72,8 +72,8 @@ special_word({special_word, _, SpecialWord}) ->
     {BaseDate, _Time} = calendar:universal_time(),
     case SpecialWord of
         today -> BaseDate;
-        tomorrow -> shift_date(BaseDate, 1);
-        yesterday -> shift_date(BaseDate, -1)
+        tomorrow -> legendary_goggles_date_calc:shift_date(BaseDate, 1);
+        yesterday -> legendary_goggles_date_calc:shift_date(BaseDate, -1)
     end.
 
 time_and_special_word(Time, SpecialWord) ->
@@ -82,39 +82,8 @@ time_and_special_word(Time, SpecialWord) ->
 
 shift_date_by_unit({date_unit, _, Unit}, {shift, _, Direction}) ->
     {BaseDate, _Time} = calendar:universal_time(),
-    shift_date_by_unit(BaseDate, Unit, Direction).
-
-shift_date_by_unit(BaseDate, _Unit, 0) ->
-    BaseDate;
-shift_date_by_unit(BaseDate, day, Direction) ->
-    shift_date(BaseDate, Direction);
-shift_date_by_unit(BaseDate, week, Direction) ->
-    shift_date(BaseDate, 7 * Direction);
-shift_date_by_unit(BaseDate, month, Direction) ->
-    %% Naive implementaion
-    shift_date(BaseDate, 30 * Direction);
-shift_date_by_unit({Y, M, D}, year, Direction) ->
-    Year = Y + Direction,
-    case { calendar:is_leap_year(Year), M, D} of
-        {false, 2, 29} -> {Year, 2, 28};
-        {true, _, _} -> {Year, M, D}
-    end.
+    legendary_goggles_date_calc:shift_date_by_unit(BaseDate, Unit, Direction).
 
 shift_date_to_weekday({weekday, _, Weekday}, {shift, _, Direction}) ->
     {BaseDate, _Time} = calendar:universal_time(),
-    BaseWeekday = calendar:day_of_the_week(BaseDate),
-    case Direction of
-        1 ->
-            WeekCompletion = 7 - BaseWeekday,
-            shift_date(BaseDate, WeekCompletion + Weekday);
-        0 ->
-            shift_date(BaseDate, Weekday - BaseWeekday);
-        -1 ->
-            WeekCompletion = 7 - Weekday,
-            shift_date(BaseDate, - BaseWeekday - WeekCompletion)
-    end.
-
-
-shift_date(Date, Shift) ->
-    calendar:gregorian_days_to_date(
-        calendar:date_to_gregorian_days(Date) + Shift).
+    legendary_goggles_date_calc:shift_date_to_weekday(BaseDate, Weekday, Direction).
