@@ -22,6 +22,9 @@
 parse(String) ->
     {ok, Tokens, _} = legendary_gogles_lexer:string(String),
     case legendary_gogles_parser:parse(Tokens) of
-        {ok, Time} -> Time;
-        _ -> invalid
+        {ok, F} ->
+            {BaseDate, {H, M, _}} = calendar:universal_time(),
+            F(BaseDate, {H, M});
+        _ ->
+            invalid
     end.
