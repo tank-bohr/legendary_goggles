@@ -1,10 +1,12 @@
--module(legendary_gogles_handlers).
+-module(legendary_gogles_rules).
 
 -export([
     ymd/3,
     md/2,
     hm/2,
     hm/3,
+    now/0,
+    date_time/2,
     special_word/1,
     time_and_special_word/2,
     shift_date_by_unit/2,
@@ -52,36 +54,50 @@ hm({integer, _, Hour} = H, M, {meridian_specifier, _, pm}) when Hour =< 11 ->
 hm(_H, _M, _S) ->
     invalid.
 
+now() ->
+    fun (_BaseDate, _DefaultTime) ->
+        {Date, {H, M, _}} = calendar:universal_time(),
+        {Date, {H, M}}
+    end.
+
+date_time(DateFun, TimeFun) ->
+    fun (BaseDate, DefaultTime) ->
+        {Date, _} = DateFun(BaseDate, DefaultTime),
+        {_, Time} = TimeFun(BaseDate, DefaultTime),
+        {Date, Time}
+    end.
+
 special_word({special_word, _, SpecialWord}) ->
     case SpecialWord of
         today ->
-            fun (BaseDate, BaseTime) ->
-                {BaseDate, BaseTime}
+            fun (BaseDate, DefaultTime) ->
+                {BaseDate, DefaultTime}
             end;
         tomorrow ->
-            fun (BaseDate, BaseTime) ->
-                {legendary_goggles_date_calc:shift_date(BaseDate, 1), BaseTime}
+            fun (BaseDate, DefaultTime) ->
+                {legendary_goggles_date_calc:shift_date(BaseDate, 1), DefaultTime}
             end;
         yesterday ->
-            fun (BaseDate, BaseTime) ->
-                {legendary_goggles_date_calc:shift_date(BaseDate, -1), BaseTime}
+            fun (BaseDate, DefaultTime) ->
+                {legendary_goggles_date_calc:shift_date(BaseDate, -1), DefaultTime}
             end
     end.
 
-time_and_special_word(Time, SpecialWord) ->
+time_and_special_word(TimeFun, SpecialWord) ->
     F = special_word(SpecialWord),
-    fun (BaseDate, BaseTime) ->
-        setelement(2, F(BaseDate, BaseTime), Time)
+    fun (BaseDate, DefaultTime) ->
+        {_, Time} = TimeFun(BaseDate, DefaultTime),
+        setelement(2, F(BaseDate, DefaultTime), Time)
     end.
 
 shift_date_by_unit({date_unit, _, Unit}, {shift, _, Direction}) ->
-    fun (BaseDate, BaseTime) ->
-        {legendary_goggles_date_calc:shift_date_by_unit(BaseDate, Unit, Direction), BaseTime}
+    fun (BaseDate, DefaultTime) ->
+        {legendary_goggles_date_calc:shift_date_by_unit(BaseDate, Unit, Direction), DefaultTime}
     end.
 
 shift_date_to_weekday({weekday, _, Weekday}, {shift, _, Direction}) ->
-    fun (BaseDate, BaseTime) ->
-        {legendary_goggles_date_calc:shift_date_to_weekday(BaseDate, Weekday, Direction), BaseTime}
+    fun (BaseDate, DefaultTime) ->
+        {legendary_goggles_date_calc:shift_date_to_weekday(BaseDate, Weekday, Direction), DefaultTime}
     end.
 
 make_fun(Map) when is_map(Map) ->
