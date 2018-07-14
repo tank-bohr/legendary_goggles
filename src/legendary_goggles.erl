@@ -18,7 +18,7 @@
     datetime/0
 ]).
 
--spec parse(string()) -> date() | time() | datetime() | invalid.
+-spec parse(string()) -> datetime() | invalid.
 parse(String) ->
     {ok, Tokens, _} = legendary_gogles_lexer:string(String),
     case legendary_gogles_parser:parse(Tokens) of
