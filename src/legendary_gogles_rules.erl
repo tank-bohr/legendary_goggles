@@ -55,9 +55,9 @@ hm(_H, _M, _S) ->
     invalid.
 
 now() ->
-    fun (_BaseDate, _DefaultTime) ->
-        {Date, {H, M, _}} = calendar:universal_time(),
-        {Date, {H, M}}
+    fun (BaseDate, _DefaultTime) ->
+        {_, {H, M, _}} = calendar:universal_time(),
+        {BaseDate, {H, M}}
     end.
 
 date_time(DateFun, TimeFun) ->
