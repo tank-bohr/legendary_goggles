@@ -1,6 +1,19 @@
 -module(legendary_goggles_date_calc_test).
 -include_lib("eunit/include/eunit.hrl").
 
+is_valid_time_test_() ->
+    [?_assertEqual(true, legendary_goggles_date_calc:is_valid_time(12, 30)),
+    ?_assertEqual(true, legendary_goggles_date_calc:is_valid_time(23, 59)),
+    ?_assertEqual(false, legendary_goggles_date_calc:is_valid_time(23, 60)),
+    ?_assertEqual(false, legendary_goggles_date_calc:is_valid_time(24, 00))].
+
+is_valid_date_test_() ->
+    [?_assertEqual(true, legendary_goggles_date_calc:is_valid_date(1, 1)),
+    ?_assertEqual(true, legendary_goggles_date_calc:is_valid_date(12, 15)),
+    ?_assertEqual(false, legendary_goggles_date_calc:is_valid_date(13, 15)),
+    ?_assertEqual(false, legendary_goggles_date_calc:is_valid_date(6, 50)),
+    ?_assertEqual(false, legendary_goggles_date_calc:is_valid_date(2, 30))].
+
 shift_date_test_() ->
     Date = {2018, 7, 7},
     [?_assertEqual({2018, 7, 10}, legendary_goggles_date_calc:shift_date(Date, 3)),

@@ -6,16 +6,16 @@ testee(Str) ->
 
 parse_test_() ->
     [
-        ?_assertEqual({23, 06}, testee("time is 23:06")),
-        ?_assertEqual({11, 1}, testee("11:01 am")),
-        ?_assertEqual({23, 2}, testee("11 : 02 pm")),
-        ?_assertEqual({22, 0}, testee("10pm")),
-        ?_assertEqual({15, 0}, testee("at 3pm")),
-        ?_assertEqual({2018, 4, 22}, testee("2018/04/22")),
-        ?_assertEqual({2018, 4, 22}, testee("2018-04-22")),
-        ?_assertMatch({_, 1, 15}, testee("Jan 15")),
-        ?_assertMatch({_, 4, 22}, testee("22 April")),
-        ?_assertMatch({_, 6, 1}, testee("on June 1st")),
+        ?_assertMatch({_, {23, 06}}, testee("time is 23:06")),
+        ?_assertMatch({_, {11, 1}}, testee("11:01 am")),
+        ?_assertMatch({_, {23, 2}}, testee("11 : 02 pm")),
+        ?_assertMatch({_, {22, 0}}, testee("10pm")),
+        ?_assertMatch({_, {15, 0}}, testee("at 3pm")),
+        ?_assertMatch({{2018, 4, 22}, _}, testee("2018/04/22")),
+        ?_assertMatch({{2018, 4, 22}, _}, testee("2018-04-22")),
+        ?_assertMatch({{_, 1, 15}, _}, testee("Jan 15")),
+        ?_assertMatch({{_, 4, 22}, _}, testee("22 April")),
+        ?_assertMatch({{_, 6, 1}, _}, testee("on June 1st")),
         ?_assertEqual({{2018, 4, 22}, {8, 46}}, testee("on 2018-04-22 at 8:46"))
     ].
 
@@ -24,12 +24,12 @@ now_test() ->
     ?assert(calendar:valid_date(Date)).
 
 special_words_test_() ->
-    [?_assert(calendar:valid_date(testee(X)))
-        || X <- ["yesterday", "today", "tomorrow"]].
+    Results = [testee(X) || X <- ["yesterday", "today", "tomorrow"]],
+    [?_assert(calendar:valid_date(Date)) || {Date, _Time} <- Results].
 
 next_week_test_() ->
-    NextWeek = testee("next week"),
-    LastWeek = testee("last week"),
+    {NextWeek, _} = testee("next week"),
+    {LastWeek, _} = testee("last week"),
     {Today, _} = calendar:universal_time(),
     %% ?debugVal(NextWeek),
     %% ?debugVal(LastWeek),
@@ -39,9 +39,9 @@ next_week_test_() ->
     ?_assert(LastWeek < Today)].
 
 shift_to_weekday_test_() ->
-    NextFriday = testee("next Fri"),
-    LastMonday = testee("last Monday"),
-    ThisWednesday = testee("this Wed"),
+    {NextFriday, _} = testee("next Fri"),
+    {LastMonday, _} = testee("last Monday"),
+    {ThisWednesday, _} = testee("this Wed"),
     {Today, _} = calendar:universal_time(),
     %% ?debugVal(NextFriday),
     %% ?debugVal(LastMonday),
@@ -58,8 +58,8 @@ shift_to_weekday_test_() ->
 syntax_error_test() ->
     ?assertEqual(invalid, testee("at am to pm")).
 
-special_word_plus_time_test() ->
+special_word_plus_time_test_() ->
     {Date, Time} = testee("tomorrow at 4pm"),
     {Today, _} = calendar:universal_time(),
-    ?assertEqual({16, 0}, Time),
-    ?assert(Date > Today).
+    [?_assertEqual({16, 0}, Time),
+    ?_assert(Date > Today)].

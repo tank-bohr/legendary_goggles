@@ -7,6 +7,8 @@
 -module(legendary_goggles_date_calc).
 
 -export([
+    is_valid_time/2,
+    is_valid_date/2,
     shift_date/2,
     shift_date_by_unit/3,
     shift_date_to_weekday/3
@@ -15,6 +17,28 @@
 -type unit() :: day | week | month | year.
 -type direction() :: -1 | 0 | 1.
 -type weekday() :: 1..7.
+
+
+-spec is_valid_time(Hour :: integer(), Minute :: integer()) -> boolean().
+%% @doc
+%% @end
+is_valid_time(Hour, Minute) when Hour >= 0, Hour =< 23, Minute >= 0, Minute =< 59 ->
+    true;
+is_valid_time(_Hour, Minute) ->
+    false.
+
+-spec is_valid_date(Month :: integer(), Day :: integer()) -> boolean().
+%% @doc
+%% @end
+is_valid_date(Month, Day) when Month =:= 2 andalso Day > 29 ->
+    false;
+is_valid_date(Month, Day) when Month < 1
+                        orelse Month > 12
+                        orelse Day < 1
+                        orelse Day > 31 ->
+    false;
+is_valid_date(_Month, _Day) ->
+    true.
 
 -spec shift_date(Date :: legendary_goggles:date(), Shift :: integer() ) -> legendary_goggles:date().
 %% @doc Shifts the date for a specified number of days
